@@ -66,7 +66,7 @@ def submit(action, data):
             elif action=='ritual':
                 if find(data['ghost'])['name']!='legacy_retry':raise ValueError('This ghost has no authored regression fixture.')
                 event('Running fixed authored tests against the rewrite in a fresh temporary directory.')
-                result=replay()
+                result=replay(find(data['ghost'])['source'])
                 event('Before/after runs completed. Checking return codes and the expected assertions.')
             else:raise ValueError('Unknown action')
             with LOCK:job.update(status='completed',result=result,elapsed=round(time.time()-job['started'],3))

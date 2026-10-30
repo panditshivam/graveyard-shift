@@ -19,7 +19,7 @@ Explore an original miniature Git history, question a ghost with an open-weight 
 ## What actually runs
 
 - Git + Python AST extraction reads four authored commits. Two old function names disappear: one has an exact normalized-body match under a new name; the other is removed during a rewrite.
-- Qwen2.5-Coder-0.5B-Instruct generates a bounded answer on the server CPU. Its immutable revision is `ea3f2471cf1b1f0db85067f1ef93848e38e88c25`. It receives the selected function, deletion diff and current body. This is a generative model, not scripted chat.
+- Qwen2.5-Coder-1.5B-Instruct generates a bounded answer on the server CPU. Its immutable revision is `2e1fd397ee46e1388853d2af2c993145b0f1098a`. It receives facts derived from the selected function, deletion commit and current body, plus the observed retry-loop lines. The exact snippets remain inspectable beside the answer. This is a generative model, not scripted chat.
 - Citation IDs are checked against the supplied records. This does **not** prove that the model’s interpretation follows from those records. Read the exact source. Developer intent is not established by deletion alone.
 - The ritual executes our fixed authored regression fixture in fresh temporary directories. The rewrite has two failing cases (one assertion failure and one error); recovering the final-attempt boundary makes all three tests pass. Actual return codes and output are displayed.
 - Motion and original synthesized sound are optional. The quiet route preserves the experience. A device-local speech voice is offered only when the browser reports an English local voice; it is not ElevenLabs.
@@ -55,6 +55,6 @@ Questions go to the hosting server. Do not paste private code. The app holds bou
 
 ## Open components and credits
 
-Application and original fixture: Apache-2.0, copyright panditshivam. Model weights: [Qwen2.5-Coder-0.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-Coder-0.5B-Instruct), Apache-2.0. Inference: Hugging Face Transformers and PyTorch. Git and Python provide inspectable source-history extraction and tests. Font families DM Sans and Space Mono are served by Google Fonts under their respective open font licences.
+Application and original fixture: Apache-2.0, copyright panditshivam. Model weights: [Qwen2.5-Coder-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-Coder-1.5B-Instruct), Apache-2.0. Inference: Hugging Face Transformers and PyTorch. Git and Python provide inspectable source-history extraction and tests. Font families DM Sans and Space Mono are served by Google Fonts under their respective open font licences.
 
 This project does not claim Gemma, TabPFN, Tinker, Temporal, Mastra, Arduino, DigitalOcean or integrations from Ghostlight. GitHub Actions checks this repository’s authored fixture and syntax; it is not a claim that Copilot wrote the code.
