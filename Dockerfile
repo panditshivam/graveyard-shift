@@ -6,7 +6,7 @@ ENV PATH=/home/user/.local/bin:$PATH HF_HOME=/home/user/.cache/huggingface PYTHO
 WORKDIR /home/user/app
 COPY --chown=user requirements.txt .
 RUN pip install --no-cache-dir torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu && pip install --no-cache-dir transformers==4.57.1
-COPY --chown=user . .
 RUN python -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen2.5-Coder-1.5B-Instruct',revision='2e1fd397ee46e1388853d2af2c993145b0f1098a',allow_patterns=['*.json','*.safetensors','*.txt','*.model'])"
+COPY --chown=user . .
 EXPOSE 7860
 CMD ["python", "server.py"]

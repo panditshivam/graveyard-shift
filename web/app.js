@@ -15,14 +15,14 @@ function setBusy(value){busy=value;document.body.classList.toggle('busy',value);
 async function job(action,extra={}){
   if(busy)return null;setBusy(true);let seen=0;const start=Date.now();$('elapsed').textContent='';
   timer=setInterval(()=>$('elapsed').textContent=`${Math.floor((Date.now()-start)/1000)}s elapsed`,1000);
-  status(action==='ask'?'The ghost is thinking. Qwen is loading or generating on CPU…':action==='ritual'?'Running the real regression tests…':'Reading the repository…');
+  status(action==='ask'?'The ghost is thinking. Qwen is loading or selecting evidence on CPU…':action==='ritual'?'Running the real regression tests…':'Reading the repository…');
   try{
     const {id}=await api('/api/jobs',{action,...extra});
     for(let polls=0;polls<150;polls++){
       const state=await api(`/api/jobs/${id}`);
       for(const e of state.events.slice(seen))$('events').append(text('li',`${e.elapsed}s · ${e.text}`));seen=state.events.length;
       if(state.status==='failed')throw Error(state.error);
-      if(state.status==='completed'){status(action==='ask'?'The answer is here. Check its evidence.':action==='ritual'?'The tests have spoken. Read both results.':'The record is ready.');$('elapsed').textContent=`${state.elapsed}s server run`;return state.result;}
+      if(state.status==='completed'){status(action==='ask'?'Qwen selected a record. Inspect the source.':action==='ritual'?'The tests have spoken. Read both results.':'The record is ready.');$('elapsed').textContent=`${state.elapsed}s server run`;return state.result;}
       await new Promise(resolve=>setTimeout(resolve,700));
     }throw Error('The response is taking too long. A job may still be running; wait before trying again.');
   }catch(e){status(e.message);tone('fail');return null;}finally{clearInterval(timer);setBusy(false);}
@@ -41,7 +41,7 @@ $('mine').onclick=async()=>{let result=await job('mine');if(result){catalog=resu
 for(const button of document.querySelectorAll('[data-question]'))button.onclick=()=>$('question').value=button.dataset.question;
 $('question-form').onsubmit=async e=>{e.preventDefault();if(!selected)return;const result=await job('ask',{ghost:selected.id,question:$('question').value});if(!result)return;
   $('answer-box').hidden=false;$('answer').textContent=result.citation_ids_valid?result.text:`Citation check failed. The model returned: ${result.text}`;$('citation-links').replaceChildren();for(const ref of result.citations.filter(x=>selected.evidence.some(e=>e.id===x))){let a=text('a',ref+' ↗');a.href=`/evidence/${selected.id}/${ref}`;a.target='_blank';a.rel='noopener';$('citation-links').append(a);}
-  $('model-meta').textContent=`${result.seconds}s · ${result.output_tokens} generated tokens · ${result.citation_ids_valid?'Citation IDs exist; support still needs inspection.':'Do not treat this answer as grounded.'}`;
+  $('model-meta').textContent=`${result.seconds}s · Qwen selected ${result.selected_record} · Exact record text, not generated prose. Selection may still be irrelevant.`;
   let localVoice=speechSynthesis?.getVoices().find(v=>v.localService&&v.lang.startsWith('en'));$('speak').hidden=!localVoice;$('speak').onclick=()=>{if(!localVoice)return;let u=new SpeechSynthesisUtterance(result.text);u.voice=localVoice;u.rate=.86;u.pitch=.75;speechSynthesis.cancel();speechSynthesis.speak(u);};tone();};
 $('challenge').onclick=async()=>{if(!selected)return;let result=await job('challenge',{ghost:selected.id});if(!result)return;let message=result.verified_body_match?`Not dead. ${selected.name} has an exact normalized body match in ${result.descendant.name}. This supports a rename candidate; the grave becomes a bridge.`:'The old symbol is absent and no exact body match was found. Removal is observed; the author’s intent is not established.';$('challenge-result').textContent=message;$('lineage').textContent=result.verified_body_match?'RENAMED / EXACT BODY MATCH':'REMOVED / NO EXACT BODY MATCH';if(result.verified_body_match)document.querySelector(`[data-ghost="${selected.id}"]`).classList.add('bridge');tone(result.verified_body_match?'win':'open');};
 $('ritual').onclick=async()=>{let result=await job('ritual',{ghost:selected.id});if(!result)return;$('test-stage').replaceChildren();for(const run of result.results){let box=text('div','','test-result');box.append(text('h3',`${run.stage==='before'?'THE REWRITE':'THE RECOVERED FIX'} / EXIT ${run.returncode}`,run.returncode?'fail':'pass'),text('pre',run.output));$('test-stage').append(box);}if(result.verified){$('test-stage').append(text('p','The ghost remembered the missing attempt. All three tests now pass.','victory'));document.body.classList.add('restored');tone('win');}else{$('test-stage').append(text('p','The expected result was not verified. Inspect the output.','fail'));tone('fail');}};

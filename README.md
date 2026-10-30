@@ -19,8 +19,8 @@ Explore an original miniature Git history, question a ghost with an open-weight 
 ## What actually runs
 
 - Git + Python AST extraction reads four authored commits. Two old function names disappear: one has an exact normalized-body match under a new name; the other is removed during a rewrite.
-- Qwen2.5-Coder-1.5B-Instruct generates a bounded answer on the server CPU. Its immutable revision is `2e1fd397ee46e1388853d2af2c993145b0f1098a`. It receives facts derived from the selected function, deletion commit and current body, plus the observed retry-loop lines. The exact snippets remain inspectable beside the answer. This is a generative model, not scripted chat.
-- Citation IDs are checked against the supplied records. This does **not** prove that the model’s interpretation follows from those records. Read the exact source. Developer intent is not established by deletion alone.
+- Qwen2.5-Coder-1.5B-Instruct selects one of the supplied evidence records using constrained generation on the server CPU. Its immutable revision is `2e1fd397ee46e1388853d2af2c993145b0f1098a`. It receives facts and snippets from the selected function, deletion commit and current body. Its generated selection is constrained to E0 (not established), E1, E2 or E3. The visible answer is the exact selected record text, not model-written prose. Greetings are scripted.
+- Only an existing record or explicit unknown selection can be returned. The model can still select an irrelevant record; this is not a semantic accuracy guarantee. Read the exact source. Developer intent is not established by deletion alone.
 - The ritual executes our fixed authored regression fixture in fresh temporary directories. The rewrite has two failing cases (one assertion failure and one error); recovering the final-attempt boundary makes all three tests pass. Actual return codes and output are displayed.
 - Motion and original synthesized sound are optional. The quiet route preserves the experience. A device-local speech voice is offered only when the browser reports an English local voice; it is not ElevenLabs.
 
